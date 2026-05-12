@@ -1,0 +1,29 @@
+name: Build AutoPhil .exe
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'auto_phil.py'
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install PyInstaller
+        run: pip install pyinstaller
+
+      - name: Build .exe
+        run: pyinstaller --onefile --windowed --name AutoPhil auto_phil.py
+
+      - name: Upload .exe
+        uses: actions/upload-artifact@v4
+        with:
+          name: AutoPhil
+          path: dist/AutoPhil.exe
