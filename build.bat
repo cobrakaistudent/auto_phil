@@ -1,12 +1,12 @@
 @echo off
 REM ============================================================
-REM  AutoPhil - Build standalone .exe
+REM  AutoPhil 2 - Build standalone .exe
 REM  Run this on ANY Windows machine with Python 3.6+ installed.
 REM  The output .exe needs NOTHING else to run.
 REM ============================================================
 
 echo.
-echo  Building AutoPhil...
+echo  Building AutoPhil 2...
 echo  ===================================
 echo.
 
@@ -17,7 +17,7 @@ if errorlevel 1 (
     exit /b 1
 )
 
-pyinstaller --onefile --windowed --name "AutoPhil" auto_phil.py
+pyinstaller --onefile --windowed --name "AutoPhil2" auto_phil2.py
 
 if errorlevel 1 (
     echo.
@@ -29,10 +29,13 @@ if errorlevel 1 (
 echo.
 echo  =============================================
 echo   BUILD COMPLETE
-echo   Output: dist\AutoPhil.exe
+echo   Output: dist\AutoPhil2.exe
 echo  =============================================
 echo.
-echo  Copy AutoPhil.exe to any Windows machine.
+echo  Copy AutoPhil2.exe to any Windows machine.
 echo  No Python or anything else needed.
+echo.
+echo  If Verizon endpoint security blocks the .exe,
+echo  run the source directly: python auto_phil2.py
 echo.
 pause

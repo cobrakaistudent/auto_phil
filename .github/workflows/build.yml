@@ -1,10 +1,10 @@
-name: Build AutoPhil .exe
+name: Build AutoPhil2 .exe
 
 on:
   workflow_dispatch:
   push:
     paths:
-      - 'auto_phil.py'
+      - 'auto_phil2.py'
 
 jobs:
   build-windows:
@@ -20,10 +20,10 @@ jobs:
         run: pip install pyinstaller
 
       - name: Build .exe
-        run: pyinstaller --onefile --windowed --name AutoPhil auto_phil.py
+        run: pyinstaller --onefile --windowed --name AutoPhil2 auto_phil2.py
 
       - name: Upload .exe
         uses: actions/upload-artifact@v4
         with:
-          name: AutoPhil
-          path: dist/AutoPhil.exe
+          name: AutoPhil2
+          path: dist/AutoPhil2.exe
