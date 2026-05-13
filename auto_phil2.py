@@ -1680,6 +1680,8 @@ def generate_b4a(d):
         "# Generated: {}".format(ts),
         "# B4C: {}".format(d["b4c_host"]),
     ]
+    if d.get("mgmt_ip"):
+        hdr.append("# Management IP: {}".format(d["mgmt_ip"]))
     if d.get("b4a_host"):
         hdr.append("# B4A: {}".format(d["b4a_host"]))
     hdr.extend([
@@ -1868,7 +1870,20 @@ class AutoPhil2App:
                      font=("Consolas", 10, "bold"), padding=(12, 6))
         s.map("TButton", background=[("active", BTN_ACTIVE)])
         s.configure("TCombobox", fieldbackground=ENTRY_BG, background=BTN_BG,
-                     foreground=FG_TEXT, font=("Consolas", 10))
+                     foreground=FG_TEXT, font=("Consolas", 10),
+                     selectbackground=ENTRY_BG, selectforeground=FG_TEXT,
+                     arrowcolor=FG_ACCENT)
+        s.map("TCombobox",
+              fieldbackground=[("readonly", ENTRY_BG), ("disabled", BG_MID)],
+              foreground=[("readonly", FG_TEXT), ("disabled", FG_DIM)],
+              selectbackground=[("readonly", ENTRY_BG)],
+              selectforeground=[("readonly", FG_TEXT)],
+              background=[("readonly", BTN_BG)])
+        # Fix combobox dropdown listbox colors on Windows
+        self.root.option_add("*TCombobox*Listbox.background", ENTRY_BG)
+        self.root.option_add("*TCombobox*Listbox.foreground", FG_TEXT)
+        self.root.option_add("*TCombobox*Listbox.selectBackground", TAB_SEL)
+        self.root.option_add("*TCombobox*Listbox.selectForeground", "white")
         s.configure("TCheckbutton", background=BG_DARK, foreground=FG_TEXT,
                      font=("Consolas", 10))
         s.map("TCheckbutton", background=[("active", BG_DARK)])
@@ -1993,15 +2008,17 @@ class AutoPhil2App:
         form = form_container
         r = 0
 
+        # B4C Side — field order matches Brian's Excel yellow cells exactly
         tk.Label(form, text="B4C Side (CSR)", font=("Consolas", 11, "bold"),
                  fg=FG_ACCENT, bg=BG_DARK).grid(row=r, column=0, columnspan=2, sticky="w", pady=(5, 5))
         r += 1
-        self.b4a_b4c_host = self._make_entry(form, r, "B4C Host Name"); r += 1
-        self.b4a_b4c_port = self._make_entry(form, r, "NNI Port (B4C)", "1/1/1"); r += 1
+        self.b4a_b4c_host = self._make_entry(form, r, "Host Name"); r += 1
+        self.b4a_mgmt_ip = self._make_entry(form, r, "Management IP"); r += 1
+        self.b4a_b4c_port = self._make_entry(form, r, "NNI/B4A/B4C Port", "1/1/1"); r += 1
         self.b4a_b4c_vlan = self._make_entry(form, r, "ODD VLAN", "1001"); r += 1
         self.b4a_bw = self._make_combo(form, r, "Bandwidth", ["10G", "1G"], "10G"); r += 1
-        self.b4a_b4c_p2p = self._make_entry(form, r, "P2P IPv4 (EBH ODD)"); r += 1
-        self.b4a_b4c_csr = self._make_entry(form, r, "CSR GLOBAL LoO"); r += 1
+        self.b4a_b4c_p2p = self._make_entry(form, r, "B4C Point to Point IPv4"); r += 1
+        self.b4a_b4c_csr = self._make_entry(form, r, "B4C CSR GLOBAL LoO"); r += 1
 
         r += 1
         tk.Label(form, text="B4A / NNI Side", font=("Consolas", 11, "bold"),
@@ -2009,8 +2026,8 @@ class AutoPhil2App:
         r += 1
         self.b4a_nni_port = self._make_entry(form, r, "NNI Port (B4A)", "1/1/c8/1"); r += 1
         self.b4a_nni_vlan = self._make_entry(form, r, "EVEN VLAN"); r += 1
-        self.b4a_nni_p2p = self._make_entry(form, r, "P2P IPv4 (NNI)"); r += 1
-        self.b4a_nni_csr = self._make_entry(form, r, "CSR GLOBAL LoO (NNI)"); r += 1
+        self.b4a_nni_p2p = self._make_entry(form, r, "NNI Point to Point IPv4"); r += 1
+        self.b4a_nni_csr = self._make_entry(form, r, "NNI CSR GLOBAL LoO"); r += 1
 
         r += 1
         tk.Label(form, text="BGP", font=("Consolas", 11, "bold"),
@@ -2059,6 +2076,7 @@ class AutoPhil2App:
 
         d = {
             "b4c_host": self.b4a_b4c_host.get().strip(),
+            "mgmt_ip": self.b4a_mgmt_ip.get().strip(),
             "b4c_port": self.b4a_b4c_port.get().strip(),
             "b4c_vlan": self.b4a_b4c_vlan.get().strip(),
             "bw": self.b4a_bw.get().strip(),
